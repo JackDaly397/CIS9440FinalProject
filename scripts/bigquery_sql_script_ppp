@@ -1,0 +1,115 @@
+CREATE SCHEMA ppp;
+
+CREATE TABLE ppploans_dw_lgl.ppp.Entity ( 
+ );
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_borrower ( 
+	borrower_id int64 NOT NULL  ,
+	name string  ,
+	rural_urban_indicator string  ,
+	hubzone_indicator string  ,
+	lmi_indicator string  ,
+	business_age_description int64  ,
+	naics_code int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_borrower ADD PRIMARY KEY ( borrower_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_date ( 
+	date_id int64 NOT NULL  ,
+	date_original_format date  ,
+	date_iso_format date  ,
+	year int64  ,
+	month int64  ,
+	day int64  ,
+	month_name string  ,
+	day_name string  ,
+	week_of_the_year int64  ,
+	week_of_the_month int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_date ADD PRIMARY KEY ( date_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_demographic ( 
+	demographic_id int64 NOT NULL  ,
+	demographic_variable string  ,
+	demographic_category string  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_demographic ADD PRIMARY KEY ( demographic_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_loan ( 
+	loan_number int64 NOT NULL  ,
+	processing_method string  ,
+	loan_status string  ,
+	term int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_loan ADD PRIMARY KEY ( loan_number )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_location ( 
+	location_id int64 NOT NULL  ,
+	address string  ,
+	city string  ,
+	state string  ,
+	zip int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_location ADD PRIMARY KEY ( location_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_school ( 
+	dbn float NOT NULL  ,
+	school_name string  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_school ADD PRIMARY KEY ( dbn )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ( 
+	lender_id int64 NOT NULL  ,
+	name string  ,
+	rural_urban_indicator string  ,
+	hubzone_indicator string  ,
+	lmi_indicator string  ,
+	business_age_description int64  ,
+	naics_code int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ADD PRIMARY KEY ( lender_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_time ( 
+	year datetime  ,
+	time_id int64 NOT NULL  ,
+	grade string  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_time ADD PRIMARY KEY ( time_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.facts_attendance ( 
+	attendanceid int64 NOT NULL  ,
+	total_days int64 NOT NULL  ,
+	days_absent int64 NOT NULL  ,
+	days_present int64 NOT NULL  ,
+	attendance_percent float NOT NULL  ,
+	chronically_absent int64  ,
+	chronic_absent_percentage float NOT NULL  ,
+	demographic_id int64 NOT NULL  ,
+	time_id int64 NOT NULL  ,
+	dbn float NOT NULL  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_attendance ADD PRIMARY KEY ( attendanceid )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.facts_ppp ( 
+	fact_id int64 NOT NULL  ,
+	initial_approval_amount float  ,
+	current_approval_amount float  ,
+	undisbursed_amount float  ,
+	foregiveness_amount float  ,
+	location_id int64 NOT NULL  ,
+	date_id int64 NOT NULL  ,
+	loan_number int64 NOT NULL  ,
+	borrower_id int64 NOT NULL  ,
+	lender_id int64 NOT NULL  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD PRIMARY KEY ( fact_id )  NOT ENFORCED;
