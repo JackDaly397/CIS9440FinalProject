@@ -11,8 +11,8 @@ Our project contains analysis of the PPP loans that were issued to small busines
 
 With the analysis of this data we will look to answer the following questions:
 
-What was the total loan amount by Company
-What was the total loan amount by State
-How many businesses by State received PPP loans
-Who are the top 10 lenders by State
+What was the total loan amount by Company<br>
+What was the total loan amount by State<br>
+How many businesses by State received PPP loans<br>
+Who are the top 10 lenders by State<br>
 What is the total loan amount by Lender
