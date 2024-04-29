@@ -30,14 +30,6 @@ CREATE TABLE ppploans_dw_lgl.ppp.dim_date (
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_date ADD PRIMARY KEY ( date_id )  NOT ENFORCED;
 
-CREATE TABLE ppploans_dw_lgl.ppp.dim_demographic ( 
-	demographic_id int64 NOT NULL  ,
-	demographic_variable string  ,
-	demographic_category string  
- );
-
-ALTER TABLE ppploans_dw_lgl.ppp.dim_demographic ADD PRIMARY KEY ( demographic_id )  NOT ENFORCED;
-
 CREATE TABLE ppploans_dw_lgl.ppp.dim_loan ( 
 	loan_number int64 NOT NULL  ,
 	processing_method string  ,
@@ -57,13 +49,6 @@ CREATE TABLE ppploans_dw_lgl.ppp.dim_location (
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_location ADD PRIMARY KEY ( location_id )  NOT ENFORCED;
 
-CREATE TABLE ppploans_dw_lgl.ppp.dim_school ( 
-	dbn float NOT NULL  ,
-	school_name string  
- );
-
-ALTER TABLE ppploans_dw_lgl.ppp.dim_school ADD PRIMARY KEY ( dbn )  NOT ENFORCED;
-
 CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ( 
 	lender_id int64 NOT NULL  ,
 	name string  ,
@@ -75,29 +60,6 @@ CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender (
  );
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ADD PRIMARY KEY ( lender_id )  NOT ENFORCED;
-
-CREATE TABLE ppploans_dw_lgl.ppp.dim_time ( 
-	year datetime  ,
-	time_id int64 NOT NULL  ,
-	grade string  
- );
-
-ALTER TABLE ppploans_dw_lgl.ppp.dim_time ADD PRIMARY KEY ( time_id )  NOT ENFORCED;
-
-CREATE TABLE ppploans_dw_lgl.ppp.facts_attendance ( 
-	attendanceid int64 NOT NULL  ,
-	total_days int64 NOT NULL  ,
-	days_absent int64 NOT NULL  ,
-	days_present int64 NOT NULL  ,
-	attendance_percent float NOT NULL  ,
-	chronically_absent int64  ,
-	chronic_absent_percentage float NOT NULL  ,
-	demographic_id int64 NOT NULL  ,
-	time_id int64 NOT NULL  ,
-	dbn float NOT NULL  
- );
-
-ALTER TABLE ppploans_dw_lgl.ppp.facts_attendance ADD PRIMARY KEY ( attendanceid )  NOT ENFORCED;
 
 CREATE TABLE ppploans_dw_lgl.ppp.facts_ppp ( 
 	fact_id int64 NOT NULL  ,
