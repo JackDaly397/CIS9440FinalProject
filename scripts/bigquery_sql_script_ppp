@@ -75,3 +75,13 @@ CREATE TABLE ppploans_dw_lgl.ppp.facts_ppp (
  );
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD PRIMARY KEY ( fact_id )  NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_borrower FOREIGN KEY ( borrower_id ) REFERENCES ppploans_dw_lgl.ppp.dim_borrower( borrower_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_date FOREIGN KEY ( date_id ) REFERENCES ppploans_dw_lgl.ppp.dim_date( date_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_loan FOREIGN KEY ( loan_number ) REFERENCES ppploans_dw_lgl.ppp.dim_loan( loan_number ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_location FOREIGN KEY ( location_id ) REFERENCES ppploans_dw_lgl.ppp.dim_location( location_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_lender FOREIGN KEY ( lender_id ) REFERENCES ppploans_dw_lgl.ppp.dim_servicing_lender( lender_id ) NOT ENFORCED;
