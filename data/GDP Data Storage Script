@@ -1,0 +1,64 @@
+!pip install azure-storage-blob
+# import librairies
+import pandas as pd
+import numpy as np
+import json
+import requests
+from azure.storage.blob import BlobServiceClient, ContainerClient
+from io import StringIO
+
+
+
+# Function to store raw data into containers
+# Azure Functions
+def azure_upload_blob(connect_str, container_name, blob_name, data):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    blob_client.upload_blob(data, overwrite=True)
+    print(f"Uploaded to Azure Blob: {blob_name}")
+
+def azure_download_blob(connect_str, container_name, blob_name):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    download_stream = blob_client.download_blob()
+    return download_stream.readall()
+
+
+
+
+import zipfile
+
+# Download the ZIP file
+url = "https://apps.bea.gov/regional/zip/SQGDP.zip"
+response = requests.get(url)
+
+# Save the ZIP file
+zip_file_path = "SQGDP.zip"
+with open(zip_file_path, "wb") as f:
+    f.write(response.content)
+
+# Extract the CSV file from the ZIP archive
+with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+    csv_file_name = "SQGDP2__ALL_AREAS_2018_2023.csv"
+    zip_ref.extract(csv_file_name)
+
+# Parse the CSV file using pandas
+df = pd.read_csv(csv_file_name)
+
+config_file_path = 'config.json'
+
+with open(config_file_path, 'r') as config_file:
+    config = json.load(config_file)
+
+# Upload the CSV file to Azure Blob Storage
+connection_string = config['connectionString']
+container_name = "projectdata"
+blob_name = "SQGDP2__ALL_AREAS_2018_2023.csv"
+
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+container_client = blob_service_client.get_container_client(container_name)
+
+with open(csv_file_name, "rb") as data:
+    container_client.upload_blob(name=blob_name, data=data)
+
+print("CSV file uploaded to Azure Blob Storage.")

@@ -1,0 +1,55 @@
+!pip install azure-storage-blob
+# import librairies
+import pandas as pd
+import numpy as np
+import json
+import requests
+from azure.storage.blob import BlobServiceClient, ContainerClient
+from io import StringIO
+
+
+
+# Function to store raw data into containers
+# Azure Functions
+def azure_upload_blob(connect_str, container_name, blob_name, data):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    blob_client.upload_blob(data, overwrite=True)
+    print(f"Uploaded to Azure Blob: {blob_name}")
+
+def azure_download_blob(connect_str, container_name, blob_name):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    download_stream = blob_client.download_blob()
+    return download_stream.readall()
+
+
+
+url = "https://www.census.gov/naics/2022NAICS/2022_NAICS_Descriptions.xlsx"
+response = requests.get(url)
+
+# Save the Excel file
+excel_file_path = "2022_NAICS_Descriptions.xlsx"
+with open(excel_file_path, "wb") as f:
+    f.write(response.content)
+
+# Parse the Excel file using pandas
+df = pd.read_excel(excel_file_path)
+
+config_file_path = 'config.json'
+
+with open(config_file_path, 'r') as config_file:
+    config = json.load(config_file)
+
+# Upload the CSV file to Azure Blob Storage
+connection_string = config['connectionString']
+container_name = "projectdata"
+blob_name = "2022_NAICS_Descriptions.xlsx"
+
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+container_client = blob_service_client.get_container_client(container_name)
+
+with open(excel_file_path, "rb") as data:
+    container_client.upload_blob(name=blob_name, data=data)
+
+print("Excel file uploaded to Azure Blob Storage.")
