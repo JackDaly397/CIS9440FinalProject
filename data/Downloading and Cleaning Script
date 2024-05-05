@@ -36,6 +36,37 @@ for blob in blob_list:
     df2 = pd.read_csv(StringIO(blob_content))
     ppp_data.append(df2)
 
+#-----------------------------------------------------------------------------------------------------------
+#To run only a portion of PPP data
+batch_size = 3
+blob_list = container_client.list_blobs()
+for blob in blob_list:
+  if blob.name == "2022_NAICS_Descriptions.xlsx" or blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+    if blob.name == "2022_NAICS_Descriptions.xlsx":
+      continue
+     # blob_client = container_client.get_blob_client(blob = blob.name)
+     # blob_data = blob_client.download_blob()
+     # blob_content = blob_data.readall()
+      #df = pd.read_excel(blob_content)
+      #naics.append(df)
+    elif blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+      continue
+      #blob_client = container_client.get_blob_client(blob = blob.name)
+      #blob_data = blob_client.download_blob()
+      #blob_content = blob_data.readall().decode('utf-8')
+      #df1 = pd.read_csv(StringIO(blob_content))
+      #gdp_data.append(df1)
+  else:
+    blob_client = container_client.get_blob_client(blob = blob.name)
+    blob_data = blob_client.download_blob()
+    blob_content = blob_data.readall().decode('utf-8')
+    df2 = pd.read_csv(StringIO(blob_content))
+    if len(ppp_data) >= batch_size:
+      break
+    else:
+      ppp_data.append(df2)
+#------------------------------------------------------------------------------------------------------------
+
 all_naics = pd.concat(naics, ignore_index=True)
 all_ppp = pd.concat(ppp_data, ignore_index=True)
 all_gdp = pd.concat(gdp_data, ignore_index=True)

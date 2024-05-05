@@ -6,10 +6,6 @@ CREATE TABLE ppploans_dw_lgl.ppp.Entity (
 CREATE TABLE ppploans_dw_lgl.ppp.dim_borrower ( 
 	borrower_id int64 NOT NULL  ,
 	name string  ,
-	rural_urban_indicator string  ,
-	hubzone_indicator string  ,
-	lmi_indicator string  ,
-	business_age_description int64  ,
 	naics_code int64  
  );
 
@@ -49,13 +45,18 @@ CREATE TABLE ppploans_dw_lgl.ppp.dim_location (
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_location ADD PRIMARY KEY ( location_id )  NOT ENFORCED;
 
-CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ( 
-	lender_id int64 NOT NULL  ,
+CREATE TABLE ppploans_dw_lgl.ppp.dim_originating_lender ( 
+	origin_lender_id int64 NOT NULL  ,
 	name string  ,
-	rural_urban_indicator string  ,
-	hubzone_indicator string  ,
-	lmi_indicator string  ,
-	business_age_description int64  ,
+	naics_code int64  
+  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_originating_lender ADD PRIMARY KEY ( origin_lender_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ( 
+	service_lender_id int64 NOT NULL  ,
+	name string  ,
 	naics_code int64  
  );
 
@@ -71,7 +72,8 @@ CREATE TABLE ppploans_dw_lgl.ppp.facts_ppp (
 	date_id int64 NOT NULL  ,
 	loan_number int64 NOT NULL  ,
 	borrower_id int64 NOT NULL  ,
-	lender_id int64 NOT NULL  
+	lender_id int64 NOT NULL  ,
+    origin_lender_id NOT NULL
  );
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD PRIMARY KEY ( fact_id )  NOT ENFORCED;
@@ -85,3 +87,5 @@ ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_loan F
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_location FOREIGN KEY ( location_id ) REFERENCES ppploans_dw_lgl.ppp.dim_location( location_id ) NOT ENFORCED;
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_lender FOREIGN KEY ( lender_id ) REFERENCES ppploans_dw_lgl.ppp.dim_servicing_lender( lender_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_originating_lender FOREIGN KEY ( origin_lender_id ) REFERENCES ppploans_dw_lgl.ppp.dim_originating_lender( origin_lender_id ) NOT ENFORCED;
