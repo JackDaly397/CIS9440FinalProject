@@ -1,17 +1,87 @@
 # Mapping dim_borrower table
-dim_borrower = ppp_data[['borrower_id', 'name', 'rural_urban_indicator', 'hubzone_indicator', 'lmi_indicator', 'business_age_description', 'naics_code']]
+dim_borrower = []
+dim_borrower = pd.DataFrame()
+neworder = ppp_table['BorrowerName']
+new_order = ppp_table['NAICSCode']
+dim_borrower['borrower_id'] = range(1, len(ppp_table)+1)
+dim_borrower["BorrowerName"] = neworder
+dim_borrower["NAICSCode"] = new_order
+dim_borrower= dim_borrower.dropna()
+dim_borrower['NAICSCode'] = dim_borrower['NAICSCode'].astype(int)
+dim_borrower
 
 # Mapping dim_date table
-dim_date = ppp_data[['date_id', 'date_original_format', 'date_iso_format', 'year_number', 'month_number', 'day_number', 'month_name', 'day_name', 'week_of_the_year', 'week_of_the_month']]
+import calendar
+dim_date = []
+start_date = pd.to_datetime('2019-01-01')
+end_date = pd.to_datetime('2024-05-05')
+
+dim_date = pd.DataFrame({'date': pd.date_range(start_date, end_date, freq='D')})
+
+dim_date = pd.DataFrame(columns = ['date_id',
+                     'original_format',
+                     'iso_format',
+                     'year_number',
+                     'month_number',
+                     'day_number',
+                     'month_name',
+                     'day_name',
+                     'week_of_the_year',
+                     'week_of_the_month'])
+
+
+dim_date['date_id'] = range(1, len(ppp_table)+1)
+
+
+def week_of_month(dt):
+  year = dt.year
+  month = dt.month
+  day = dt.day
+
+  cal = calendar.monthcalendar(year, month)
+  week_number = (day - 1) // 7+1
+  return week_number
+
+dim_date['year_number'] = ppp_table['DateApproved'].dt.year
+dim_date['original_format'] = ppp_table['DateApproved']
+dim_date['iso_format'] = ppp_table['DateApproved'].apply(lambda x: x.isoformat())
+dim_date['month_number'] = ppp_table['DateApproved'].dt.month
+dim_date['day_number'] = ppp_table['DateApproved'].dt.day
+dim_date['month_name'] = ppp_table['DateApproved'].dt.strftime('%B')
+dim_date['day_name'] = ppp_table['DateApproved'].dt.strftime('%A')
+dim_date['week_of_the_year'] = ppp_table['DateApproved'].dt.strftime('%U')
+dim_date['week_of_the_month'] = ppp_table['DateApproved'].apply(week_of_month)
+
+dim_date = dim_date.dropna()
+dim_date['year_number'] = dim_date['year_number'].astype(int)
+dim_date['month_number'] = dim_date['month_number'].astype(int)
+dim_date['day_number'] = dim_date['day_number'].astype(int)
+dim_date['week_of_the_month'] = dim_date['week_of_the_month'].astype(int)
+dim_date
 
 # Mapping dim_loan table
-dim_loan = ppp_data[['loan_number', 'processing_method', 'loan_status', 'term']]
+dim_loan = ppp_table[['LoanNumber', 'ProcessingMethod', 'LoanStatus', 'Term']]
+dim_loan
 
 # Mapping dim_location table
 dim_location = ppp_data[['location_id', 'address', 'city', 'state', 'zip']]
 
 # Mapping dim_servicing_lender table
-dim_servicing_lender = ppp_data[['lender_id', 'name', 'rural_urban_indicator', 'hubzone_indicator', 'lmi_indicator', 'business_age_description', 'naics_code']]
+dim_servicing_lender = []
+unique_ids = ppp_table['ServicingLenderName'].unique()
+dim_servicing_lender = pd.DataFrame()
+dim_servicing_lender['servicing_lender_id'] = range(1, len(unique_ids)+1)
+dim_servicing_lender["servicing_name"] = unique_ids
+dim_servicing_lender
+
+#Mapping dim_originating_lender table
+dim_originating_lender = []
+unique_ids = ppp_table['OriginatingLender'].unique()
+neworder3 = ['originating_id','originating_name']
+dim_originating_lender = pd.DataFrame()
+dim_originating_lender['originating_lender_id'] = range(1, len(unique_ids)+1)
+dim_originating_lender["originating_name"] = unique_ids
+dim_originating_lender
 
 # Mapping facts_ppp table
 facts_ppp = ppp_data[['fact_id', 'initial_approval_amount', 'current_approval_amount', 'undisbursed_amount', 'foregiveness_amount', 'location_id', 'date_id', 'loan_number', 'borrower_id', 'lender_id']]
