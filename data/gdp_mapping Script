@@ -55,13 +55,20 @@ gdp_df.columns
 gdp_df.head()
 #----------------
 # Mapping dim_industry table
-dim_industry = gdp_data[['industry_id', 'industry_classification', 'description']]
+dim_industry = gdp_df[['Code', 'Title', 'Description']]
+dim_industry.rename(columns={'Code': 'industry_id', 'Title': 'industry_classification', 'Description': 'description'}, inplace=True)
+# Mapping dim_location table
 
 # Mapping dim_location table
-dim_location = gdp_data[['location_id', 'geofips', 'geoname', 'region']]
+dim_location = gdp_df[['Code', 'geofips', 'geoname', 'region']]
+# dim_location.rename(columns={'code': 'location_id'}, inplace=True)
 
 # Mapping dim_time table
-dim_time = gdp_data[['time_id', 'quarter', 'year']]
+dim_time = gdp_df[['Code', 'quarter', 'year']]
+dim_time.rename(columns={'code': 'time_id'}, inplace=True)
 
 # Mapping facts_gdp table
-facts_gdp = gdp_data[['gdp_id', 'unit', 'location_id', 'industry_id', 'time_id']]
+
+facts_gdp = gdp_df[['Code', 'unit', 'code', 'code', 'code']]
+facts_gdp.rename(columns={'Code': 'gdp_id', 'code': 'location_id', 'code': 'industry_id', 'code': 'time_id'}, inplace=True)
+
