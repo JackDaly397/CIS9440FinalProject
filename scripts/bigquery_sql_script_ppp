@@ -35,15 +35,33 @@ CREATE TABLE ppploans_dw_lgl.ppp.dim_loan (
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_loan ADD PRIMARY KEY ( loan_number )  NOT ENFORCED;
 
-CREATE TABLE ppploans_dw_lgl.ppp.dim_location ( 
-	location_id int64 NOT NULL  ,
+CREATE TABLE ppploans_dw_lgl.ppp.dim_borrower_location ( 
+	borrow_location_id int64 NOT NULL  ,
 	address string  ,
 	city string  ,
 	state string  ,
 	zip int64  
  );
 
-ALTER TABLE ppploans_dw_lgl.ppp.dim_location ADD PRIMARY KEY ( location_id )  NOT ENFORCED;
+ALTER TABLE ppploans_dw_lgl.ppp.dim_borrower_location ADD PRIMARY KEY ( borrow_location_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_location ( 
+	servicing_location_id int64 NOT NULL  ,
+	address string  ,
+	city string  ,
+	state string  ,
+	zip int64  
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_servicing_location ADD PRIMARY KEY ( servicing_location_id )  NOT ENFORCED;
+
+CREATE TABLE ppploans_dw_lgl.ppp.dim_originating_location ( 
+	originating_location_id int64 NOT NULL  ,
+	city string  ,
+	state string  ,
+ );
+
+ALTER TABLE ppploans_dw_lgl.ppp.dim_originating_location ADD PRIMARY KEY ( originating_location_id )  NOT ENFORCED;
 
 CREATE TABLE ppploans_dw_lgl.ppp.dim_originating_lender ( 
 	origin_lender_id int64 NOT NULL  ,
@@ -82,8 +100,12 @@ ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_date F
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_loan FOREIGN KEY ( loan_number ) REFERENCES ppploans_dw_lgl.ppp.dim_loan( loan_number ) NOT ENFORCED;
 
-ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_location FOREIGN KEY ( location_id ) REFERENCES ppploans_dw_lgl.ppp.dim_location( location_id ) NOT ENFORCED;
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_borrower_location FOREIGN KEY ( borrow_location_id) REFERENCES ppploans_dw_lgl.ppp.dim_borrower_location( borrow_location_id ) NOT ENFORCED;
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_lender FOREIGN KEY ( lender_id ) REFERENCES ppploans_dw_lgl.ppp.dim_servicing_lender( lender_id ) NOT ENFORCED;
 
 ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_originating_lender FOREIGN KEY ( origin_lender_id ) REFERENCES ppploans_dw_lgl.ppp.dim_originating_lender( origin_lender_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_location FOREIGN KEY ( servicing_location_id ) REFERENCES ppploans_dw_lgl.ppp.dim_servicing_location( servicing_location_id ) NOT ENFORCED;
+
+ALTER TABLE ppploans_dw_lgl.ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_originating_location FOREIGN KEY ( originating_location_id ) REFERENCES ppploans_dw_lgl.ppp.dim_originating_location( originating_location_id ) NOT ENFORCED;
