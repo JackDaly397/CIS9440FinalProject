@@ -63,8 +63,68 @@ dim_date
 dim_loan = ppp_table[['LoanNumber', 'ProcessingMethod', 'LoanStatus', 'Term']]
 dim_loan
 
-# Mapping dim_location table
-dim_location = ppp_data[['location_id', 'address', 'city', 'state', 'zip']]
+# Mapping dim_borrow_location table
+
+location_table = pd.DataFrame(data)
+
+# Extract location columns
+location_data = location_table[['BorrowerAddress', 'BorrowerCity', 'BorrowerState', 'BorrowerZip']]
+
+# Rename columns to match the desired structure
+location_data.columns = ['address', 'city', 'state', 'zip']
+
+# Drop duplicates to get unique location values
+dim_borrow_location = location_data
+
+# Reset index to create a unique location_id
+dim_borrow_location.reset_index(drop=True, inplace=True)
+
+# Add location_id column
+dim_borrow_location['borrow_location_id'] = dim_location.index + 1
+
+dim_borrow_location
+
+#Mapping dim_servicing_location table
+
+location_table1 = pd.DataFrame(data)
+
+# Extract location columns
+location_data1 = location_table[['ServicingLenderAddress', 'ServicingLenderCity', 'ServicingLenderState', 'ServicingLenderZip']]
+
+# Rename columns to match the desired structure
+location_data1.columns = ['address', 'city', 'state', 'zip']
+
+# Drop duplicates to get unique location values
+dim_servicing_location = location_data1
+
+# Reset index to create a unique location_id
+dim_servicing_location.reset_index(drop=True, inplace=True)
+
+# Add location_id column
+dim_servicing_location['servicing_location_id'] = dim_servicing_location.index + 1
+
+dim_servicing_location
+
+#Mapping dim_originating_location table
+
+location_table2 = pd.DataFrame(data)
+
+# Extract location columns
+location2_data = location_table2[['OriginatingLenderCity', 'OriginatingLenderState']]
+
+# Rename columns to match the desired structure
+location2_data.columns = ['city', 'state']
+
+# Drop duplicates to get unique location values
+dim_originating_location = location2_data
+
+# Reset index to create a unique location_id
+dim_originating_location.reset_index(drop=True, inplace=True)
+
+# Add location_id column
+dim_originating_location['originating_location_id'] = dim_originating_location.index + 1
+
+dim_originating_location
 
 # Mapping dim_servicing_lender table
 dim_servicing_lender = []
@@ -84,4 +144,30 @@ dim_originating_lender["originating_name"] = unique_ids
 dim_originating_lender
 
 # Mapping facts_ppp table
-facts_ppp = ppp_data[['fact_id', 'initial_approval_amount', 'current_approval_amount', 'undisbursed_amount', 'foregiveness_amount', 'location_id', 'date_id', 'loan_number', 'borrower_id', 'lender_id']]
+ppp_table['fact_id'] = range(1, len(ppp_table)+1)
+ppp_table = ppp_table.rename(columns={'InitialApprovalAmount':'initial_approval_amount',
+                                'CurrentApprovalAmount':'current_approval_amount',
+                                'UndisbursedAmount':'undisbursed_amount',
+                                'ForgivenessAmount':'foregiveness_amount',
+                                      'LoanNumber':'loan_number'})
+ppp_table = ppp_table.dropna()
+
+ppp_table['originating_location_id'] = dim_originating_location['originating_location_id']
+ppp_table['servicing_location_id'] = dim_servicing_location['servicing_location_id']
+ppp_table['borrow_location_id'] = dim_borrow_location['borrow_location_id']
+ppp_table['date_id'] = dim_date['date_id']
+ppp_table['originating_lender_id'] = dim_originating_lender['originating_lender_id']
+ppp_table['servicing_lender_id'] = dim_servicing_lender['servicing_lender_id']
+ppp_table['borrower_id'] = dim_borrower['borrower_id']
+
+ppp_table['originating_lender_id'] = ppp_table['originating_lender_id'].astype(int)
+ppp_table['servicing_lender_id'] = ppp_table['servicing_lender_id'].astype(int)
+ppp_table['borrower_id'] = ppp_table['borrower_id'].astype(int)
+ppp_table['date_id'] = ppp_table['date_id'].astype(int)
+ppp_table['borrow_location_id'] = ppp_table['borrow_location_id'].astype(int)
+ppp_table['servicing_location_id'] = ppp_table['servicing_location_id'].astype(int)
+ppp_table['originating_location_id'] = ppp_table['originating_location_id'].astype(int)
+
+new_order = ['fact_id', 'initial_approval_amount','current_approval_amount','undisbursed_amount','foregiveness_amount','originating_location_id', 'servicing_location_id','borrow_location_id', 'date_id', 'loan_number', 'borrower_id', 'servicing_lender_id', 'originating_lender_id']
+ppp_table = ppp_table[new_order]
+ppp_table.head()
