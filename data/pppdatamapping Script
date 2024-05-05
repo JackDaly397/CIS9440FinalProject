@@ -1,0 +1,17 @@
+# Mapping dim_borrower table
+dim_borrower = ppp_data[['borrower_id', 'name', 'rural_urban_indicator', 'hubzone_indicator', 'lmi_indicator', 'business_age_description', 'naics_code']]
+
+# Mapping dim_date table
+dim_date = ppp_data[['date_id', 'date_original_format', 'date_iso_format', 'year_number', 'month_number', 'day_number', 'month_name', 'day_name', 'week_of_the_year', 'week_of_the_month']]
+
+# Mapping dim_loan table
+dim_loan = ppp_data[['loan_number', 'processing_method', 'loan_status', 'term']]
+
+# Mapping dim_location table
+dim_location = ppp_data[['location_id', 'address', 'city', 'state', 'zip']]
+
+# Mapping dim_servicing_lender table
+dim_servicing_lender = ppp_data[['lender_id', 'name', 'rural_urban_indicator', 'hubzone_indicator', 'lmi_indicator', 'business_age_description', 'naics_code']]
+
+# Mapping facts_ppp table
+facts_ppp = ppp_data[['fact_id', 'initial_approval_amount', 'current_approval_amount', 'undisbursed_amount', 'foregiveness_amount', 'location_id', 'date_id', 'loan_number', 'borrower_id', 'lender_id']]
