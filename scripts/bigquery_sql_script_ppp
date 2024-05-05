@@ -48,7 +48,6 @@ ALTER TABLE ppploans_dw_lgl.ppp.dim_location ADD PRIMARY KEY ( location_id )  NO
 CREATE TABLE ppploans_dw_lgl.ppp.dim_originating_lender ( 
 	origin_lender_id int64 NOT NULL  ,
 	name string  ,
-	naics_code int64  
   
  );
 
@@ -57,7 +56,6 @@ ALTER TABLE ppploans_dw_lgl.ppp.dim_originating_lender ADD PRIMARY KEY ( origin_
 CREATE TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ( 
 	service_lender_id int64 NOT NULL  ,
 	name string  ,
-	naics_code int64  
  );
 
 ALTER TABLE ppploans_dw_lgl.ppp.dim_servicing_lender ADD PRIMARY KEY ( lender_id )  NOT ENFORCED;

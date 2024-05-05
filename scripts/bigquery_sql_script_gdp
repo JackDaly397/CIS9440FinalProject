@@ -3,7 +3,6 @@ CREATE SCHEMA CIS9440_PPP_Loans;
 CREATE TABLE CIS9440_PPP_Loans.dim_industry ( 
 	industry_id int64 NOT NULL  ,
 	industry_classification string  ,
-	description string  
  );
 
 ALTER TABLE CIS9440_PPP_Loans.dim_industry ADD PRIMARY KEY ( industry_id )  NOT ENFORCED;
