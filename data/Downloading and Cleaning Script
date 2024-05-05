@@ -1,0 +1,64 @@
+config_file_path = 'config.json'
+
+#load the JSON configuration file
+with open(config_file_path, 'r') as config_file:
+  config = json.load(config_file)
+
+#print the configuration
+#Connection_STRING = config['CONNECTION_STRING_AZURE_STORAGE']
+
+CONNECTION_STRING_AZURE_STORAGE = config['connectionString']
+CONTAINER_AZURE = 'projectdata'
+blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING_AZURE_STORAGE)
+container_client = blob_service_client.get_container_client(CONTAINER_AZURE)
+ppp_data = []
+gdp_data = []
+naics = []
+blob_list = container_client.list_blobs()
+for blob in blob_list:
+  if blob.name == "2022_NAICS_Descriptions.xlsx" or blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+    if blob.name == "2022_NAICS_Descriptions.xlsx":
+      blob_client = container_client.get_blob_client(blob = blob.name)
+      blob_data = blob_client.download_blob()
+      blob_content = blob_data.readall()
+      df = pd.read_excel(blob_content)
+      naics.append(df)
+    elif blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+      blob_client = container_client.get_blob_client(blob = blob.name)
+      blob_data = blob_client.download_blob()
+      blob_content = blob_data.readall().decode('utf-8')
+      df1 = pd.read_csv(StringIO(blob_content))
+      gdp_data.append(df1)
+  else:
+    blob_client = container_client.get_blob_client(blob = blob.name)
+    blob_data = blob_client.download_blob()
+    blob_content = blob_data.readall().decode('utf-8')
+    df2 = pd.read_csv(StringIO(blob_content))
+    ppp_data.append(df2)
+
+all_naics = pd.concat(naics, ignore_index=True)
+all_ppp = pd.concat(ppp_data, ignore_index=True)
+all_gdp = pd.concat(gdp_data, ignore_index=True)
+
+#Creating copy of NAICS Table
+naics_table = all_naics.copy()
+all_naics.shape
+#Filtering table to necessary columns only
+naics_table = naics_table[['Code','Title']]
+#Dropping "T" from the end of strings
+naics_table.loc[naics_table['Title'].str[-1] == 'T', 'Title'] = naics_table.loc[naics_table['Title'].str[-1] == 'T', 'Title'].str[:-1]
+#Checking to ensure no NA values
+naics_table.isna().sum()
+
+#Creating copy of GDP Table
+gdp_table = all_gdp.copy()
+gdp_table.head()
+#Cleaning GDP Table and Adding Annual Amounts
+gdp_table = gdp_table.dropna()
+gdp_table.iloc[:, 8:] = gdp_table.iloc[:, 8:].apply(pd.to_numeric, errors='coerce')
+gdp_table['2018'] = gdp_table['2018:Q1'] + gdp_table['2018:Q2'] + gdp_table['2018:Q3'] + gdp_table['2018:Q4']
+gdp_table['2019'] = gdp_table['2019:Q1'] + gdp_table['2019:Q2'] + gdp_table['2019:Q3'] + gdp_table['2019:Q4']
+gdp_table['2020'] = gdp_table['2020:Q1'] + gdp_table['2020:Q2'] + gdp_table['2020:Q3'] + gdp_table['2020:Q4']
+gdp_table['2021'] = gdp_table['2021:Q1'] + gdp_table['2021:Q2'] + gdp_table['2021:Q3'] + gdp_table['2021:Q4']
+gdp_table['2022'] = gdp_table['2022:Q1'] + gdp_table['2022:Q2'] + gdp_table['2022:Q3'] + gdp_table['2022:Q4']
+gdp_table['2023'] = gdp_table['2023:Q1'] + gdp_table['2023:Q2'] + gdp_table['2023:Q3'] + gdp_table['2023:Q4']
