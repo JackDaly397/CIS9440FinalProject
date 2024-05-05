@@ -100,3 +100,44 @@ mask = gdp_table['Description'].str.startswith(" ")
 gdp_table.loc[mask, 'Description'] = gdp_table.loc[mask, 'Description'].str.lstrip()
 gdp_table['Description'].str.startswith(" ").sum()
 gdp_table = gdp_table.drop('LineCode', axis = 1)
+
+#Cleaning PPP data
+ppp_table = all_ppp.copy()
+ppp_table = ppp_table[[
+    'BorrowerName', 
+    'BorrowerAddress', 
+    'BorrowerCity', 
+    'BorrowerState', 
+    'BorrowerZip', 
+    'NAICSCode',
+    'LoanNumber',
+    'LoanStatusDate',
+    'LoanStatus',
+    'Term',
+    'ProcessingMethod',
+    'ServicingLenderName',
+    'ServicingLenderAddress',
+    'ServicingLenderCity',
+    'ServicingLenderState',
+    'ServicingLenderZip',
+    'BusinessAgeDescription',
+    'DateApproved',
+    'InitialApprovalAmount',
+    'CurrentApprovalAmount',
+    'UndisbursedAmount',
+    'ForgivenessAmount',
+    'OriginatingLender',
+    'OriginatingLenderCity',
+    'OriginatingLenderState',
+    'ForgivenessDate'
+    ]]
+
+ppp_table = ppp_table.dropna()
+ppp_table.isna().sum()
+ppp_table['NAICSCode'] = ppp_table['NAICSCode'].astype('int')
+ppp_table['BorrowerZip'] = ppp_table['BorrowerZip'].str.extract(r'^(\d{5})')
+ppp_table['ServicingLenderZip'] = ppp_table['ServicingLenderZip'].str.extract(r'^(\d{5})')
+ppp_table['LoanStatusDate'] = pd.to_datetime(ppp_table['LoanStatusDate'])
+ppp_table['DateApproved'] = pd.to_datetime(ppp_table['DateApproved'])
+ppp_table['ForgivenessDate'] = pd.to_datetime(ppp_table['ForgivenessDate'])
+ppp_table.head()
