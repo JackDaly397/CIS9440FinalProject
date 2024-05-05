@@ -1,0 +1,108 @@
+!pip install azure-storage-blob # Microoft Azure
+!pip install pyarrow
+!pip install psycopg2 sqlalchemy
+
+import pandas as pd
+import numpy as np
+import json
+import requests
+from io import StringIO
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from math import ceil
+import datetime
+import calendar
+from sqlalchemy import create_engine
+
+# Azure Functions
+def azure_upload_blob(connect_str, container_name, blob_name, data):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    blob_client.upload_blob(data, overwrite=True)
+    print(f"Uploaded to Azure Blob: {blob_name}")
+
+def azure_download_blob(connect_str, container_name, blob_name):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    download_stream = blob_client.download_blob()
+    return download_stream.readall()
+
+
+    config_file_path = 'config.json'
+
+    #load the JSON configuration file
+    with open(config_file_path, 'r') as config_file:
+      config = json.load(config_file)
+    
+    #print the configuration
+    #Connection_STRING = config['CONNECTION_STRING_AZURE_STORAGE']
+    
+    CONNECTION_STRING_AZURE_STORAGE = config['connectionString']
+    CONTAINER_AZURE = 'projectdata'
+    blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING_AZURE_STORAGE)
+    container_client = blob_service_client.get_container_client(CONTAINER_AZURE)
+    ppp_data = []
+    gdp_data = []
+    naics = []
+    blob_list = container_client.list_blobs()
+    for blob in blob_list:
+      if blob.name == "2022_NAICS_Descriptions.xlsx" or blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+        if blob.name == "2022_NAICS_Descriptions.xlsx":
+          blob_client = container_client.get_blob_client(blob = blob.name)
+          blob_data = blob_client.download_blob()
+          blob_content = blob_data.readall()
+          df = pd.read_excel(blob_content)
+          naics.append(df)
+        elif blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+          blob_client = container_client.get_blob_client(blob = blob.name)
+          blob_data = blob_client.download_blob()
+          blob_content = blob_data.readall().decode('utf-8')
+          df1 = pd.read_csv(StringIO(blob_content))
+          gdp_data.append(df1)
+      else:
+        blob_client = container_client.get_blob_client(blob = blob.name)
+        blob_data = blob_client.download_blob()
+        blob_content = blob_data.readall().decode('utf-8')
+        df2 = pd.read_csv(StringIO(blob_content))
+        ppp_data.append(df2)
+
+#----------------------Check for mapping
+        gdp_df = df.copy()
+        gdp_df.head()
+#----------------------
+# Mapping dim_industry table
+dim_industry = gdp_df[['Code', 'Title', 'Description']]
+dim_industry.rename(columns={'Code': 'industry_id', 'Title': 'industry_classification', 'Description': 'description'}, inplace=True)
+dim_industry.head()
+# Mapping dim_location table
+dim_location = gdp_data[['location_id', 'geofips', 'geoname', 'region']]
+dim_location.rename(columns={'Code': 'location_id'}, inplace=True)#chage 'Code' to zipcode?
+
+#Mapping dim_time table
+dim_date['date_id'] = range(1, len(gdp_table)+1)
+
+def week_of_month(dt):
+  year = dt.year
+  month = dt. month
+  day = dt. day
+  
+  cal = calendar.monthcalendar (year, month)
+  week_number = (day - 1) // 7+1
+  return week_number 
+
+dim_date['year_number'] -=PPP_table[ 'DateApproved' ].dt. year
+dim_date['original _format'] = ppp_table[ 'DateApproved']
+dim_date['iso_format'] = ppp_table[ 'DateApproved' ].apply(lambda x: x.isoformat())
+dim_date['month_number'] = PPp_table['DateApproved'].dt. month
+dim_date['day_number'] = PPP_table[ 'DateApproved' ].dt.day
+dim_date['month_name'] = PPP_table[ 'DateApproved'] .dt.strftime('%B')
+dim_date['day_name'] - PPP_table[ 'DateApproved'].dt. strftime('%A')
+dim_date['week_of_the _year'] = PPP_table['DateApproved'].dt.strftime('%U')
+dim_date['week_of_the_month'] = PPP_table['DateApproved'].apply(week_of_month)
+dim_date = dim_date.dropna()
+dim_date['year_number'] = dim_date[' year_number']. astype(int)
+dim_date['month_ number'] = dim_date['month _number'].astype(int)
+dim_date['day _number'] = dim_date['day_number'].astype(int)
+dim_date[ 'week__of_the month'] - dim_date['week_of_the month']. astype(int)
+
+# Mapping facts_gdp table
+facts_gdp = gdp_data[['gdp_id', 'unit', 'location_id', 'industry_id', 'time_id']]
