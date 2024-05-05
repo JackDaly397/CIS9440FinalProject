@@ -1,0 +1,67 @@
+!pip install azure-storage-blob # Microoft Azure
+!pip install pyarrow
+!pip install psycopg2 sqlalchemy
+#----------------
+import pandas as pd
+import numpy as np
+import json
+import requests
+from io import StringIO
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from math import ceil
+import datetime
+import calendar
+from sqlalchemy import create_engine
+#----------------
+# Azure Functions
+def azure_upload_blob(connect_str, container_name, blob_name, data):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    blob_client.upload_blob(data, overwrite=True)
+    print(f"Uploaded to Azure Blob: {blob_name}")
+
+def azure_download_blob(connect_str, container_name, blob_name):
+    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+    blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+    download_stream = blob_client.download_blob()
+    return download_stream.readall()
+#----------------
+from azure.storage.blob import BlobServiceClient
+
+
+connect_str = "DefaultEndpointsProtocol=https;AccountName=stpppploans;AccountKey=mTiZ7ivt3HPDNCrmZBwCEeaPSn9XGDZhmSDqHVYokaMfkDz7ny1Ayow5q0o7KD6U1NyhwQh7v2q++AStLchIOw==;EndpointSuffix=core.windows.net"
+
+blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+
+container_name = "projectdata"
+
+container_client = blob_service_client.get_container_client(container_name)
+
+blobs_list = container_client.list_blobs()
+for blob in blobs_list:
+    if blob.name == "2022_NAICS_Descriptions.xlsx" or blob.name == "SQGDP2_ALL_AREAS_2018_2023.csv":
+        blob_client = container_client.get_blob_client(blob=blob.name)
+        blob_data = blob_client.download_blob()
+        blob_content = blob_data.readall()
+        if blob.name.endswith('.xlsx'):
+            df = pd.read_excel(blob_content)
+        else:
+            df = pd.read_csv(StringIO(blob_content.decode('utf-8')))
+        
+        naics.append(df)
+#----------------
+gdp_df = df.copy()
+gdp_df.columns
+gdp_df.head()
+#----------------
+# Mapping dim_industry table
+dim_industry = gdp_data[['industry_id', 'industry_classification', 'description']]
+
+# Mapping dim_location table
+dim_location = gdp_data[['location_id', 'geofips', 'geoname', 'region']]
+
+# Mapping dim_time table
+dim_time = gdp_data[['time_id', 'quarter', 'year']]
+
+# Mapping facts_gdp table
+facts_gdp = gdp_data[['gdp_id', 'unit', 'location_id', 'industry_id', 'time_id']]
