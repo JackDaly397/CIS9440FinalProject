@@ -1,0 +1,107 @@
+CREATE SCHEMA ppp;
+
+CREATE TABLE ppp.dim_borrower ( 
+    borrower_id bigint NOT NULL,
+    name varchar(255),
+    naics_code bigint
+);
+
+ALTER TABLE ppp.dim_borrower ADD PRIMARY KEY (borrower_id);
+
+CREATE TABLE ppp.dim_date ( 
+    date_id bigint NOT NULL,
+    date_original_format date,
+    date_iso_format date,
+    year_number bigint,
+    month_number bigint,
+    day_number bigint,
+    month_name varchar(255),
+    day_name varchar(255),
+    week_of_the_year bigint,
+    week_of_the_month bigint
+);
+
+ALTER TABLE ppp.dim_date ADD PRIMARY KEY (date_id);
+
+CREATE TABLE ppp.dim_loan ( 
+    loan_number bigint NOT NULL,
+    processing_method varchar(255),
+    loan_status varchar(255),
+    term bigint
+);
+
+ALTER TABLE ppp.dim_loan ADD PRIMARY KEY (loan_number);
+
+CREATE TABLE ppp.dim_borrower_location ( 
+    borrow_location_id bigint NOT NULL,
+    address varchar(255),
+    city varchar(255),
+    state varchar(255),
+    zip bigint
+);
+
+ALTER TABLE ppp.dim_borrower_location ADD PRIMARY KEY (borrow_location_id);
+
+CREATE TABLE ppp.dim_servicing_location ( 
+    servicing_location_id bigint NOT NULL,
+    address varchar(255),
+    city varchar(255),
+    state varchar(255),
+    zip bigint
+);
+
+ALTER TABLE ppp.dim_servicing_location ADD PRIMARY KEY (servicing_location_id);
+
+CREATE TABLE ppp.dim_originating_location ( 
+    originating_location_id bigint NOT NULL,
+    city varchar(255),
+    state varchar(255)
+);
+
+ALTER TABLE ppp.dim_originating_location ADD PRIMARY KEY (originating_location_id);
+
+CREATE TABLE ppp.dim_originating_lender ( 
+    origin_lender_id bigint NOT NULL,
+    name varchar(255)
+);
+
+ALTER TABLE ppp.dim_originating_lender ADD PRIMARY KEY (origin_lender_id);
+
+CREATE TABLE ppp.dim_servicing_lender ( 
+    service_lender_id bigint NOT NULL,
+    name varchar(255)
+);
+
+ALTER TABLE ppp.dim_servicing_lender ADD PRIMARY KEY (service_lender_id);
+
+CREATE TABLE ppp.facts_ppp ( 
+    fact_id bigint NOT NULL,
+    initial_approval_amount float,
+    current_approval_amount float,
+    undisbursed_amount float,
+    foregiveness_amount float,
+    location_id bigint NOT NULL,
+    date_id bigint NOT NULL,
+    loan_number bigint NOT NULL,
+    borrower_id bigint NOT NULL,
+    lender_id bigint NOT NULL,
+    origin_lender_id bigint NOT NULL
+);
+
+ALTER TABLE ppp.facts_ppp ADD PRIMARY KEY (fact_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_borrower FOREIGN KEY (borrower_id) REFERENCES ppp.dim_borrower(borrower_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_date FOREIGN KEY (date_id) REFERENCES ppp.dim_date(date_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_loan FOREIGN KEY (loan_number) REFERENCES ppp.dim_loan(loan_number);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_borrower_location FOREIGN KEY (location_id) REFERENCES ppp.dim_borrower_location(borrow_location_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_lender FOREIGN KEY (lender_id) REFERENCES ppp.dim_servicing_lender(service_lender_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_originating_lender FOREIGN KEY (origin_lender_id) REFERENCES ppp.dim_originating_lender(origin_lender_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_servicing_location FOREIGN KEY (location_id) REFERENCES ppp.dim_servicing_location(servicing_location_id);
+
+ALTER TABLE ppp.facts_ppp ADD CONSTRAINT fk_facts_ppp_dim_originating_location FOREIGN KEY (location_id) REFERENCES ppp.dim_originating_location(originating_location_id);
