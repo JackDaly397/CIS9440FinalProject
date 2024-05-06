@@ -1,0 +1,275 @@
+#import necessary libraries
+import pandas as pd
+import numpy as np
+import json
+import requests
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+import zipfile
+from io import StringIO
+
+config_file_path = 'config.json'
+
+#load the JSON configuration file
+with open(config_file_path, 'r') as config_file:
+  config = json.load(config_file)
+
+#print the configuration
+#Connection_STRING = config['CONNECTION_STRING_AZURE_STORAGE']
+
+# Global counters for dimensional IDs
+dim_date_counter = 0
+dim_borrower_counter = 0
+dim_servicing_lender_counter = 0
+dim_originating_lender_counter = 0
+fact_counter = 0
+
+
+CONNECTION_STRING_AZURE_STORAGE = config['connectionString']
+CONTAINER_AZURE = 'projectdata'
+blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING_AZURE_STORAGE)
+container_client = blob_service_client.get_container_client(CONTAINER_AZURE)
+ppp_data = []
+gdp_data = []
+naics = []
+batch_size = 2
+blob_list = container_client.list_blobs()
+for blob in blob_list:
+  if blob.name == "2022_NAICS_Descriptions.xlsx" or blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+    if blob.name == "2022_NAICS_Descriptions.xlsx":
+      continue
+     # blob_client = container_client.get_blob_client(blob = blob.name)
+     # blob_data = blob_client.download_blob()
+     # blob_content = blob_data.readall()
+      #df = pd.read_excel(blob_content)
+      #naics.append(df)
+    elif blob.name == "SQGDP2__ALL_AREAS_2018_2023.csv":
+      continue
+      #blob_client = container_client.get_blob_client(blob = blob.name)
+      #blob_data = blob_client.download_blob()
+      #blob_content = blob_data.readall().decode('utf-8')
+      #df1 = pd.read_csv(StringIO(blob_content))
+      #gdp_data.append(df1)
+  elif "public_up_to_150k" in blob.name:
+    blob_client = container_client.get_blob_client(blob = blob.name)
+    blob_data = blob_client.download_blob()
+    blob_content = blob_data.readall().decode('utf-8')
+    chunk = len(blob_content)
+    df2 = pd.read_csv(StringIO(blob_content))
+    ppp_data.append(df2)
+
+    all_ppp = pd.concat(ppp_data, ignore_index=True)
+
+    ppp_table = all_ppp.copy()
+
+    ppp_table = ppp_table[[
+        'BorrowerName', 
+        'BorrowerAddress', 
+        'BorrowerCity', 
+        'BorrowerState', 
+        'BorrowerZip', 
+        'NAICSCode',
+        'LoanNumber',
+        'LoanStatus',
+        'Term',
+        'ProcessingMethod',
+        'ServicingLenderName',
+        'ServicingLenderAddress',
+        'ServicingLenderCity',
+        'ServicingLenderState',
+        'ServicingLenderZip',
+        'BusinessAgeDescription',
+        'DateApproved',
+        'InitialApprovalAmount',
+        'CurrentApprovalAmount',
+        'UndisbursedAmount',
+        'ForgivenessAmount',
+        'OriginatingLender',
+        'OriginatingLenderCity',
+        'OriginatingLenderState',
+        'ForgivenessDate'
+        ]]
+
+    ppp_table = ppp_table.dropna()
+    ppp_table.isna().sum()
+    ppp_table['NAICSCode'] = ppp_table['NAICSCode'].astype('int')
+    ppp_table['BorrowerZip'] = ppp_table['BorrowerZip'].str.extract(r'^(\d{5})')
+    ppp_table['ServicingLenderZip'] = ppp_table['ServicingLenderZip'].str.extract(r'^(\d{5})')
+    ppp_table['DateApproved'] = pd.to_datetime(ppp_table['DateApproved'])
+    ppp_table['ForgivenessDate'] = pd.to_datetime(ppp_table['ForgivenessDate'])
+
+    import calendar
+    dim_date = []
+    start_date = pd.to_datetime('2019-01-01')
+    end_date = pd.to_datetime('2024-05-05')
+
+    dim_date = pd.DataFrame({'date': pd.date_range(start_date, end_date, freq='D')})
+
+    dim_date = pd.DataFrame(columns = ['date_id',
+                        'original_format',
+                        'iso_format',
+                        'year_number',
+                        'month_number',
+                        'day_number',
+                        'month_name',
+                        'day_name',
+                        'week_of_the_year',
+                        'week_of_the_month'])
+
+
+    dim_date['date_id'] = (range(dim_date_counter + 1, dim_date_counter + chunk + 1))
+    dim_date_counter += chunk
+
+
+    def week_of_month(dt):
+      year = dt.year
+      month = dt.month
+      day = dt.day
+
+      cal = calendar.monthcalendar(year, month)
+      week_number = (day - 1) // 7+1
+      return week_number
+
+    dim_date['year_number'] = ppp_table['DateApproved'].dt.year
+    dim_date['original_format'] = ppp_table['DateApproved']
+    dim_date['iso_format'] = ppp_table['DateApproved'].apply(lambda x: x.isoformat())
+    dim_date['month_number'] = ppp_table['DateApproved'].dt.month
+    dim_date['day_number'] = ppp_table['DateApproved'].dt.day
+    dim_date['month_name'] = ppp_table['DateApproved'].dt.strftime('%B')
+    dim_date['day_name'] = ppp_table['DateApproved'].dt.strftime('%A')
+    dim_date['week_of_the_year'] = ppp_table['DateApproved'].dt.strftime('%U')
+    dim_date['week_of_the_month'] = ppp_table['DateApproved'].apply(week_of_month)
+
+    dim_date = dim_date.dropna()
+    dim_date['year_number'] = dim_date['year_number'].astype(int)
+    dim_date['month_number'] = dim_date['month_number'].astype(int)
+    dim_date['day_number'] = dim_date['day_number'].astype(int)
+    dim_date['week_of_the_month'] = dim_date['week_of_the_month'].astype(int)
+    #
+
+    dim_borrower = []
+    dim_borrower = pd.DataFrame()
+    neworder = ppp_table['BorrowerName']
+    new_order = ppp_table['NAICSCode']
+    dim_borrower['borrower_id'] = (range(dim_borrower_counter + 1, dim_borrower_counter + chunk + 1))
+    dim_borrower_counter += chunk
+
+    dim_borrower["BorrowerName"] = neworder
+    dim_borrower["NAICSCode"] = new_order
+    dim_borrower= dim_borrower.dropna()
+    dim_borrower['NAICSCode'] = dim_borrower['NAICSCode'].astype(int)
+
+    dim_servicing_lender = []
+    unique_ids = ppp_table['ServicingLenderName'].unique()
+    dim_servicing_lender = pd.DataFrame()
+    dim_servicing_lender['servicing_lender_id'] = ((range(dim_servicing_lender_counter + 1, dim_servicing_lender_counter + chunk + 1)))
+    dim_borrower_counter += chunk
+
+    dim_servicing_lender["servicing_name"] = unique_ids
+    dim_servicing_lender
+
+
+    dim_originating_lender = []
+    unique_ids = ppp_table['OriginatingLender'].unique()
+    neworder3 = ['originating_id','originating_name']
+    dim_originating_lender = pd.DataFrame()
+    dim_originating_lender['originating_lender_id'] = (range(dim_originating_lender_counter + 1, dim_originating_lender_counter + chunk + 1))
+    dim_borrower_counter += chunk
+
+
+    dim_originating_lender["originating_name"] = unique_ids
+    dim_originating_lender
+
+    dim_loan = ppp_table[['LoanNumber', 'ProcessingMethod', 'LoanStatus', 'Term']]
+    dim_loan
+
+    location_table = pd.DataFrame(data)
+
+    # Extract location columns
+    location_data = location_table[['BorrowerAddress', 'BorrowerCity', 'BorrowerState', 'BorrowerZip']]
+
+    # Rename columns to match the desired structure
+    location_data.columns = ['address', 'city', 'state', 'zip']
+
+    # Drop duplicates to get unique location values
+    dim_borrow_location = location_data.drop_duplicates()
+
+    # Reset index to create a unique location_id
+    dim_borrow_location.reset_index(drop=True, inplace=True)
+
+    # Add location_id column
+    dim_borrow_location['borrow_location_id'] = dim_location.index + 1
+
+    dim_borrow_location
+
+    location_table1 = pd.DataFrame(data)
+
+    # Extract location columns
+    location_data1 = location_table[['ServicingLenderAddress', 'ServicingLenderCity', 'ServicingLenderState', 'ServicingLenderZip']]
+
+    # Rename columns to match the desired structure
+    location_data1.columns = ['address', 'city', 'state', 'zip']
+
+    # Drop duplicates to get unique location values
+    dim_servicing_location = location_data1
+
+    # Reset index to create a unique location_id
+    dim_servicing_location.reset_index(drop=True, inplace=True)
+
+    # Add location_id column
+    dim_servicing_location['servicing_location_id'] = dim_servicing_location.index + 1
+
+    dim_servicing_location
+
+    location_table2 = pd.DataFrame(data)
+
+    # Extract location columns
+    location2_data = location_table2[['OriginatingLenderCity', 'OriginatingLenderState']]
+
+    # Rename columns to match the desired structure
+    location2_data.columns = ['city', 'state']
+
+    # Drop duplicates to get unique location values
+    dim_originating_location = location2_data
+
+    # Reset index to create a unique location_id
+    dim_originating_location.reset_index(drop=True, inplace=True)
+
+    # Add location_id column
+    dim_originating_location['originating_location_id'] = dim_originating_location.index + 1
+
+    dim_originating_location
+
+    ppp_table['fact_id'] = range(fact_counter + 1, fact_counter + len(chunk) + 1)
+    fact_counter += len(chunk)
+    ppp_table = ppp_table.rename(columns={'InitialApprovalAmount':'initial_approval_amount',
+                                    'CurrentApprovalAmount':'current_approval_amount',
+                                    'UndisbursedAmount':'undisbursed_amount',
+                                    'ForgivenessAmount':'foregiveness_amount',
+                                          'LoanNumber':'loan_number'})
+    ppp_table = ppp_table.dropna()
+
+    ppp_table['originating_location_id'] = dim_originating_location['originating_location_id']
+    ppp_table['servicing_location_id'] = dim_servicing_location['servicing_location_id']
+    ppp_table['borrow_location_id'] = dim_borrow_location['borrow_location_id']
+    ppp_table['date_id'] = dim_date['date_id']
+    ppp_table['originating_lender_id'] = dim_originating_lender['originating_lender_id']
+    ppp_table['servicing_lender_id'] = dim_servicing_lender['servicing_lender_id']
+    ppp_table['borrower_id'] = dim_borrower['borrower_id']
+
+    ppp_table['originating_lender_id'] = ppp_table['originating_lender_id'].astype(int)
+    ppp_table['servicing_lender_id'] = ppp_table['servicing_lender_id'].astype(int)
+    ppp_table['borrower_id'] = ppp_table['borrower_id'].astype(int)
+    ppp_table['date_id'] = ppp_table['date_id'].astype(int)
+    ppp_table['borrow_location_id'] = ppp_table['borrow_location_id'].astype(int)
+    ppp_table['servicing_location_id'] = ppp_table['servicing_location_id'].astype(int)
+    ppp_table['originating_location_id'] = ppp_table['originating_location_id'].astype(int)
+
+    new_order = ['fact_id', 'initial_approval_amount','current_approval_amount','undisbursed_amount','foregiveness_amount','originating_location_id', 'servicing_location_id','borrow_location_id', 'date_id', 'loan_number', 'borrower_id', 'servicing_lender_id', 'originating_lender_id']
+    ppp_table = ppp_table[new_order]
+
+    pwd = 'cis9440!'
+    database_url = f'postgresql://group4:{pwd}@cis9440group4.postgres.database.azure.com/postgres'
+
+    engine = create_engine(database_url)
+
+    dim_date.to_sql('dim_date',con=engine, if_exists= 'append', index = False)
