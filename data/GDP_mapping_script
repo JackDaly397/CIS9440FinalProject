@@ -70,12 +70,15 @@ def azure_download_blob(connect_str, container_name, blob_name):
         gdp_df.head()
 #----------------------
 # Mapping dim_industry table
-dim_industry = gdp_df[['Code', 'Title', 'Description']]
-dim_industry.rename(columns={'Code': 'industry_id', 'Title': 'industry_classification', 'Description': 'description'}, inplace=True)
-dim_industry.head()
+dim_industry = gdp_df[['IndustryClassification', 'Description']]
+dim_industry.rename(columns={'IndustryClassification': 'industry_id', 'Description': 'industry_classification'}, inplace=True)
+dim_industry
 # Mapping dim_location table
-dim_location = gdp_data[['location_id', 'geofips', 'geoname', 'region']]
-dim_location.rename(columns={'Code': 'location_id'}, inplace=True)#chage 'Code' to zipcode?
+dim_location = gdp_df[['GeoFIPS', 'GeoName','Region']]
+dim_location['location_id'] = range(1,len(gdp_df) + 1)
+dim_location
+
+
 
 #Mapping dim_time table
 dim_date['date_id'] = range(1, len(gdp_table)+1)
