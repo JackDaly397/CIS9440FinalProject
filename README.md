@@ -2,6 +2,9 @@
 
 # Project Overview
 
+## Information Architecture
+![Information Architecture](link_to_image)
+
 ## Introduction
 
 ### Background:
@@ -51,6 +54,14 @@ Small businesses faced unprecedented challenges during the COVID-19 pandemic, ne
 ### Strengths and Weaknesses:
 - **Strengths**: Large dataset enabling detailed analysis, diverse sources provide comprehensive insights.
 - **Weaknesses**: Data quality issues may require extensive cleaning and preprocessing.
+
+## Dimensional Modeling
+
+### PPP Dimensional Modeling
+Dimensional modeling for PPP data involves creating a structure that facilitates analysis and reporting. This included defining dimensions such as borrower information, loan status, and industry classification, as well as measures such as loan amounts.
+
+### GDP Dimensional Modeling
+Dimensional modeling for GDP data involves structuring the data to enable analysis of economic performance at different levels, such as national, regional, and industry-specific. This included defining dimensions such as time, geography, and economic indicators, along with measures such as GDP growth rates.
 
 ## Methods
 
