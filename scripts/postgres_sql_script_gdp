@@ -1,0 +1,41 @@
+CREATE SCHEMA GDP;
+
+CREATE TABLE GDP.dim_industry ( 
+	industry_id bigint NOT NULL  ,
+	industry_classification varchar(255)
+ );
+
+ALTER TABLE GDP.dim_industry ADD PRIMARY KEY ( industry_id );
+
+CREATE TABLE GDP.dim_location ( 
+	location_id bigint NOT NULL  ,
+	geofips varchar(255)  ,
+	geoname varchar(255)  ,
+	region varchar(255)  
+ );
+
+ALTER TABLE GDP.dim_location ADD PRIMARY KEY ( location_id );
+
+CREATE TABLE GDP.dim_time ( 
+	time_id bigint NOT NULL  ,
+	quarter varchar(255)  ,
+	year bigint  
+ );
+
+ALTER TABLE GDP.dim_time ADD PRIMARY KEY ( time_id );
+
+CREATE TABLE GDP.facts_gdp ( 
+	gdp_id bigint NOT NULL  ,
+	unit bigint  ,
+	location_id bigint  ,
+	industry_id bigint  ,
+	time_id bigint  
+ );
+
+ALTER TABLE GDP.facts_gdp ADD PRIMARY KEY ( gdp_id )  ;
+
+ALTER TABLE GDP.facts_gdp ADD CONSTRAINT fk_facts_gdp_dim_industry FOREIGN KEY ( industry_id ) REFERENCES GDP.dim_industry( industry_id );
+
+ALTER TABLE GDP.facts_gdp ADD CONSTRAINT fk_facts_gdp_dim_location FOREIGN KEY ( location_id ) REFERENCES GDP.dim_location( location_id );
+
+ALTER TABLE GDP.facts_gdp ADD CONSTRAINT fk_facts_gdp_dim_time FOREIGN KEY ( time_id ) REFERENCES GDP.dim_time( time_id );
