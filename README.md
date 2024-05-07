@@ -60,6 +60,7 @@ Small businesses faced unprecedented challenges during the COVID-19 pandemic, ne
 
 ### PPP Dimensional Modeling
 Dimensional modeling for PPP data involves creating a structure that facilitates analysis and reporting. This included defining dimensions such as borrower information, loan status, and industry classification, as well as measures such as loan amounts.
+![PPP screenshot](https://github.com/JackDaly397/CIS9440FinalProject/assets/159973038/91e5f392-1ef6-4b63-92be-d3172a8d7cd8)
 
 ### GDP Dimensional Modeling
 Dimensional modeling for GDP data involves structuring the data to enable analysis of economic performance at different levels, such as national, regional, and industry-specific. This included defining dimensions such as time, geography, and economic indicators, along with measures such as GDP growth rates.
@@ -99,7 +100,7 @@ Dimensional modeling for GDP data involves structuring the data to enable analys
 - Classification by NAICS code provides insights into industry distribution of PPP loans.
 - Visualizations highlight top lenders by state, total loan amounts per industry, and comparison with GDP data.
 
-#link for Visualizations: Total approved amount by State and Total approved amount by Company name:https://public.tableau.com/app/profile/michelle.luna/viz/cis9440/TotalapprovedamountbyState
+#link for all Visualizations:https://public.tableau.com/app/profile/michelle.luna/viz/cis9440/TotalapprovedamountbyState
 
 
 ## Conclusion
