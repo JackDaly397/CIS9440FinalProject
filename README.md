@@ -63,6 +63,7 @@ Dimensional modeling for PPP data involves creating a structure that facilitates
 
 ### GDP Dimensional Modeling
 Dimensional modeling for GDP data involves structuring the data to enable analysis of economic performance at different levels, such as national, regional, and industry-specific. This included defining dimensions such as time, geography, and economic indicators, along with measures such as GDP growth rates.
+![GDP screenshot](https://github.com/JackDaly397/CIS9440FinalProject/assets/159973038/29cef676-e414-4094-8231-354918f1d69e)
 
 ## Methods
 
