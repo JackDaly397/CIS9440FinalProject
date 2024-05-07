@@ -3,7 +3,8 @@
 # Project Overview
 
 ## Information Architecture
-[Link to Information Architecture](https://drive.google.com/file/d/1y5xubyr-Es94vA1Yy3jjFblRPLzu-wPs/view?usp=sharing)
+[Link to Information Architecture](https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=Information%20Architecture.drawio.html#R7Vxbc5s4FP41nuk%2BuAPIgP3oW5POpI13ndnd9qUj2zLQYOQVIrb761cYyVyEbZwGQxImD0FHEhd95%2FsknaOkBYar7Q2Ba%2FsLXiC3pSmLbQuMWpqmKrrCfoWWXWTRw1JosIiz4I1iw9T5hURPbg2cBfJTDSnGLnXWaeMcex6a05QNEoI36WZL7KafuoYWkgzTOXRl6z%2FOgtqRtSs%2BK7TfIseyxZNVhdfM4PzRIjjw%2BPM87KGoZgXFbXhT34YLvEmYwLgFhgRjGl2ttkPkhsMqRizq9%2BlI7eGVCfJokQ4%2FZz9uZ%2BPvXz%2Fbg7X%2FcBv0biy13eXvRndiKNCCjQwvYkJtbGEPuuPYOth%2FLgrvqrBS3OYO4zUzqsz4E1G64zDDgGJmsunK5bXshcnuX95%2FX%2FgWFj7qojjaJitHO15y4Qy5g8OID7GLCavajzkYLLFHhWmBljBw2bAMfErwIxL2lgZMYAz7XVYjjx8fUh8HZI5ODJrwUEgsRE%2B006N24YgmHsDRuUF4hdjXsQYEuZA6T2lfhNylrUO7GFt2weG9AGp%2B3yfoBvxJI0ghs0yj79WM%2FYAtnCd2aYWXHyaTCau%2Fw9D7Q1SzRydaSN7DnHwdXs53rsOchADWaGM7FE3XcD%2BmGyYgaW%2BYRe50NzsYDgjfB5TdBnG7H%2FmTqh9gFVxVzzuH47oJJ9BH5qdeL889RspwPNYy7sTsaj%2F8OeU2T4hQtD0JNK8VisDF0uDFTaw8JjfZCdHpKSU5Rq%2FRgMs1QCuoAUatNEC7XANuRpOG%2FOWRX%2Bvo1bJfLMEa%2Bl9Cf1CQ%2Fmat6A8upv%2FX%2FufhlDX4MGRrfr8RgvKEABgVCwHQGyG4XAg6BYUAdGqlBB1ZCZBP8%2Bb%2F%2Fq%2BAMGVQJtinFmk04EU1QDfTIqCaVa8GZMeoQhXqwm69ILtVUCt26xKIf8ENM%2FDZfrylBM4pAygLbQycep6ur4hnqprmWQ7NVC2HZ0ZpPDMbnsm75PM8q1dIzWh4dppnebGtKxOt2xBN3o%2BeJ1q94layWjZESxENdKsmmtZriJazIjzLNK1bK6apcoxI7AAjsjVZomvFh4x6pYlAEyh%2Bjg4U3kL26qUD8h7ynA40maJyBaDyVBFQJSCvqgAx6b8l6%2BquAEU3t6BmCiDvbs8pgMgWhcmiRgpKlILqk0WgkYJnSEGv6KbgxbffvOsEO%2Byl4%2FxDJzPF6BmHid6U98r4zOE1fiMNpUgaU4VfvTr%2FqNtUIe%2F9eWRmQvAc%2Bb7jWbk7xx2DqvCuMQ3z24nlgEwSEChVZyc0eeofOSvk%2BU5IK1axPwF%2BBNQHOHOLp4mJjVezwH9jgJof9RSkqpkTnhMwJyE9HCx%2F%2BYy%2FfP73PUutCLudl9rKjnA99tt%2F3yzbgwny%2FrTcMWh%2FIfc5Bzfqh%2BJxvPLxzR3gkmGNJK6yc7hyVqqZMJ89YVaezQc5x6kiOO%2FJ3EZskJhPYe%2FobAmDopCyl3HWPnpTcJqZXJZaNJfVLQ1PowpRfW6oe1%2BaIMJWaBSRVr22vFrR6FfNzkdqr2CeveJx96LnBuqFIpDPDXBdvsMwBIb199iYa0q0aXk3M6jeSe9PKp9BO3La%2BV3zrWggqGZ8OxoHaviW4ttVQzy5%2B8i8aEC0ArXVePUZWcKBSeFk%2FBdgUdGOkix91kDtrrdRN14vbsTPZyXWuNEt049h5uSzs3mijbNyoffbS98j0OUALKMpouTy%2BhToOeB1stH0F0Mvb3VSGnoPBHr%2BEpPVq8dvmwHrOJ5qXjatPDzzZr%2FS8Ay1%2BK1AqWf%2FnLZEKFkx%2Fm8dUQYs%2Fm8oYPw%2F)
+
 
 ## Introduction
 
@@ -62,13 +63,14 @@ Dimensional modeling for PPP data involves creating a structure that facilitates
 
 ### GDP Dimensional Modeling
 Dimensional modeling for GDP data involves structuring the data to enable analysis of economic performance at different levels, such as national, regional, and industry-specific. This included defining dimensions such as time, geography, and economic indicators, along with measures such as GDP growth rates.
+![GDP screenshot](https://github.com/JackDaly397/CIS9440FinalProject/assets/159973038/29cef676-e414-4094-8231-354918f1d69e)
 
 ## Methods
 
 ### Tools:
 - **Python**: Utilized for data processing and analysis using libraries such as Pandas, NumPy, and Matplotlib.
 - **Azure Services**: Azure Blob Storage used for data storage and retrieval.
-- **Power BI**: Employed for creating interactive visualizations and dashboards.
+- **Tableau**: Employed for creating interactive visualizations and dashboards.
 - **DataGrip**: Used for database management and SQL scripting.
 - **PostgresSQL**: Database management system for storing dimensional models and processed data.
 
@@ -96,6 +98,9 @@ Dimensional modeling for GDP data involves structuring the data to enable analys
 - Insights gained include total loan amounts by companies, states, and lenders.
 - Classification by NAICS code provides insights into industry distribution of PPP loans.
 - Visualizations highlight top lenders by state, total loan amounts per industry, and comparison with GDP data.
+
+#link for Visualizations: Total approved amount by State and Total approved amount by Company name:https://public.tableau.com/app/profile/michelle.luna/viz/cis9440/TotalapprovedamountbyState
+
 
 ## Conclusion
 
