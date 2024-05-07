@@ -99,6 +99,9 @@ Dimensional modeling for GDP data involves structuring the data to enable analys
 - Classification by NAICS code provides insights into industry distribution of PPP loans.
 - Visualizations highlight top lenders by state, total loan amounts per industry, and comparison with GDP data.
 
+#link for Visualizations: Total approved amount by State and Total approved amount by Company name:https://public.tableau.com/app/profile/michelle.luna/viz/cis9440/TotalapprovedamountbyState
+
+
 ## Conclusion
 
 ### Impact and Recommendations:
