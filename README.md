@@ -53,13 +53,13 @@ Small businesses faced unprecedented challenges during the COVID-19 pandemic, ne
 - Aggregate GDP data covers multiple years and regions.
 
 ### Strengths and Weaknesses:
-- **Strengths**: Large dataset enabling detailed analysis, diverse sources provide comprehensive insights.
+- **Strengths**: Large dataset can enables detailed analysis, diverse sources provide comprehensive insights.
 - **Weaknesses**: Data quality issues may require extensive cleaning and preprocessing.
 
 ## Dimensional Modeling
 
 ### PPP Dimensional Modeling
-Dimensional modeling for PPP data involves creating a structure that facilitates analysis and reporting. This included defining dimensions such as borrower information, loan status, and industry classification, as well as measures such as loan amounts.
+We use supabase to create the following diagram. Dimensional modeling for PPP data involves creating a structure that facilitates analysis and reporting. This includes defining dimensions such as borrower information, loan status, and industry classification, as well as measures such as loan amounts.
 ![PPP screenshot](https://github.com/JackDaly397/CIS9440FinalProject/assets/159973038/91e5f392-1ef6-4b63-92be-d3172a8d7cd8)
 
 ### GDP Dimensional Modeling
