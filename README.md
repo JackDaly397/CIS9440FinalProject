@@ -69,7 +69,7 @@ Dimensional modeling for GDP data involves structuring the data to enable analys
 ### Tools:
 - **Python**: Utilized for data processing and analysis using libraries such as Pandas, NumPy, and Matplotlib.
 - **Azure Services**: Azure Blob Storage used for data storage and retrieval.
-- **Power BI**: Employed for creating interactive visualizations and dashboards.
+- **Tableau**: Employed for creating interactive visualizations and dashboards.
 - **DataGrip**: Used for database management and SQL scripting.
 - **PostgresSQL**: Database management system for storing dimensional models and processed data.
 
