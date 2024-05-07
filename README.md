@@ -3,7 +3,7 @@
 # Project Overview
 
 ## Information Architecture
-![Information Architecture](https://drive.google.com/file/d/1y5xubyr-Es94vA1Yy3jjFblRPLzu-wPs/view?usp=sharing)
+[Link to Information Architecture](https://drive.google.com/file/d/1y5xubyr-Es94vA1Yy3jjFblRPLzu-wPs/view?usp=sharing)
 
 ## Introduction
 
