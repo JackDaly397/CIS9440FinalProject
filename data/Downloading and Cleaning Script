@@ -83,23 +83,6 @@ naics_table.isna().sum()
 
 #Creating copy of GDP Table
 gdp_table = all_gdp.copy()
-gdp_table.head()
-#Cleaning GDP Table and Adding Annual Amounts
-gdp_table = gdp_table.dropna()
-gdp_table.iloc[:, 8:] = gdp_table.iloc[:, 8:].apply(pd.to_numeric, errors='coerce')
-gdp_table['2018'] = gdp_table['2018:Q1'] + gdp_table['2018:Q2'] + gdp_table['2018:Q3'] + gdp_table['2018:Q4']
-gdp_table['2019'] = gdp_table['2019:Q1'] + gdp_table['2019:Q2'] + gdp_table['2019:Q3'] + gdp_table['2019:Q4']
-gdp_table['2020'] = gdp_table['2020:Q1'] + gdp_table['2020:Q2'] + gdp_table['2020:Q3'] + gdp_table['2020:Q4']
-gdp_table['2021'] = gdp_table['2021:Q1'] + gdp_table['2021:Q2'] + gdp_table['2021:Q3'] + gdp_table['2021:Q4']
-gdp_table['2022'] = gdp_table['2022:Q1'] + gdp_table['2022:Q2'] + gdp_table['2022:Q3'] + gdp_table['2022:Q4']
-gdp_table['2023'] = gdp_table['2023:Q1'] + gdp_table['2023:Q2'] + gdp_table['2023:Q3'] + gdp_table['2023:Q4']
-
-#Removing spaces at beginning of string
-gdp_table['Description'].str.startswith(" ").sum()
-mask = gdp_table['Description'].str.startswith(" ")
-gdp_table.loc[mask, 'Description'] = gdp_table.loc[mask, 'Description'].str.lstrip()
-gdp_table['Description'].str.startswith(" ").sum()
-gdp_table = gdp_table.drop('LineCode', axis = 1)
 
 #Cleaning PPP data
 ppp_table = all_ppp.copy()
@@ -141,3 +124,82 @@ ppp_table['LoanStatusDate'] = pd.to_datetime(ppp_table['LoanStatusDate'])
 ppp_table['DateApproved'] = pd.to_datetime(ppp_table['DateApproved'])
 ppp_table['ForgivenessDate'] = pd.to_datetime(ppp_table['ForgivenessDate'])
 ppp_table.head()
+
+
+all_gdp = pd.concat(gdp_data, ignore_index=True)
+
+gdp_table = all_gdp.copy()
+gdp_table = gdp_df.dropna()
+gdp_table.iloc[:, 8:] = gdp_table.iloc[:, 8:].apply(pd.to_numeric, errors='coerce')
+gdp_table['2018'] = gdp_table['2018:Q1'] + gdp_table['2018:Q2'] + gdp_table['2018:Q3'] + gdp_table['2018:Q4']
+gdp_table['2019'] = gdp_table['2019:Q1'] + gdp_table['2019:Q2'] + gdp_table['2019:Q3'] + gdp_table['2019:Q4']
+gdp_table['2020'] = gdp_table['2020:Q1'] + gdp_table['2020:Q2'] + gdp_table['2020:Q3'] + gdp_table['2020:Q4']
+gdp_table['2021'] = gdp_table['2021:Q1'] + gdp_table['2021:Q2'] + gdp_table['2021:Q3'] + gdp_table['2021:Q4']
+gdp_table['2022'] = gdp_table['2022:Q1'] + gdp_table['2022:Q2'] + gdp_table['2022:Q3'] + gdp_table['2022:Q4']
+gdp_table['2023'] = gdp_table['2023:Q1'] + gdp_table['2023:Q2'] + gdp_table['2023:Q3'] + gdp_table['2023:Q4']
+
+#Removing spaces at beginning of string
+gdp_table['Description'].str.startswith(" ").sum()
+mask = gdp_table['Description'].str.startswith(" ")
+gdp_table.loc[mask, 'Description'] = gdp_table.loc[mask, 'Description'].str.lstrip()
+gdp_table['Description'].str.startswith(" ").sum()
+gdp_table = gdp_table.drop('LineCode', axis = 1)
+
+#Creating industry dimension
+dim_industry = gdp_table[['IndustryClassification', 'Description']]
+dim_industry.rename(columns={'IndustryClassification': 'industry', 'Description': 'industry_classification'}, inplace=True)
+dim_industry['industry_id'] = range(1,len(gdp_df) + 1)
+
+dim_industry
+
+dim_location = gdp_df[['GeoFIPS', 'GeoName','Region']]
+dim_location = dim_location.rename(columns={'GeoFIPS':'geofips', 'GeoName':'geoname','Region':'region'})
+dim_location['location_id'] = range(1,len(gdp_df) + 1)
+dim_location
+
+#Creating facts table
+facts_table = []
+facts_table = gdp_table.iloc[:, 7:37].copy()
+facts_table['industry_id'] = dim_industry['industry_id']
+facts_table['location_id'] = dim_location['location_id'] 
+column_mapping = {
+    '2018:Q1': 'q1_2018',
+    '2018:Q2': 'q2_2018',
+    '2018:Q3': 'q3_2018',
+    '2018:Q4': 'q4_2018',
+    '2019:Q1': 'q1_2019',
+    '2019:Q2': 'q2_2019',
+    '2019:Q3': 'q3_2019',
+    '2019:Q4': 'q4_2019',
+    '2020:Q1': 'q1_2020',
+    '2020:Q2': 'q2_2020',
+    '2020:Q3': 'q3_2020',
+    '2020:Q4': 'q4_2020',
+    '2021:Q1': 'q1_2021',
+    '2021:Q2': 'q2_2021',
+    '2021:Q3': 'q3_2021',
+    '2021:Q4': 'q4_2021',
+    '2022:Q1': 'q1_2022',
+    '2022:Q2': 'q2_2022',
+    '2022:Q3': 'q3_2022',
+    '2022:Q4': 'q4_2022',
+    '2023:Q1': 'q1_2023',
+    '2023:Q2': 'q2_2023',
+    '2023:Q3': 'q3_2023',
+    '2023:Q4': 'q4_2023',
+    '2018': 'gdp_2018',
+    '2019': 'gdp_2019',
+    '2020': 'gdp_2020',
+    '2021': 'gdp_2021',
+    '2022': 'gdp_2022',
+    '2023': 'gdp_2023'
+}
+facts_table['gdp_id'] = range(1,len(facts_table)+1)
+facts_table = facts_table.rename(columns = column_mapping)
+facts_table = facts_table.dropna()
+
+pwd = 'cis9440!'
+database_url = f'postgresql://group4:{pwd}@cis9440group4.postgres.database.azure.com/postgres'
+engine = create_engine(database_url)
+
+facts_table.to_sql('facts_gdp',con=engine, if_exists= 'append', schema = 'gdp_data',index = False)
